@@ -35,15 +35,18 @@ enum tap_dance_keycodes
 {
     TD_LBRKT,
     TD_RBRKT,
+    TD_SLASH,
 };
 
 void tapdance_lbrkt(qk_tap_dance_state_t *state, void *user_data);
 void tapdance_rbrkt(qk_tap_dance_state_t *state, void *user_data);
+void tapdance_slash(qk_tap_dance_state_t *state, void *user_data);
 
 qk_tap_dance_action_t tap_dance_actions[] =
 {
     [TD_LBRKT] = ACTION_TAP_DANCE_FN(tapdance_lbrkt),
     [TD_RBRKT] = ACTION_TAP_DANCE_FN(tapdance_rbrkt),
+    [TD_SLASH] = ACTION_TAP_DANCE_FN(tapdance_slash),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
@@ -56,16 +59,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
      * │ Ctrl  │   A   │   S   │   D   │   F   │   G   │  TAB  │       │ ENTER │   H   │   J   │   K   │   L   │   ;   │   '   │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-     * │ LShft │   Z   │   X   │   C   │   V   │   B   │  ([{  │       │  }])  │   N   │   M   │   ,   │   .   │   /   │   -   │
+     * │ LShft │   Z   │   X   │   C   │   V   │   B   │  ([{  │       │  }])  │   N   │   M   │   ,   │   .   │  /|\  │   -   │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-     * │T(FUNC)│       │       │ O(LSH)|CTL/SPC│O(LCMD)│O(LOPT)│  ADJ  │ ROPT  │ RCMD  │  SPC  │   \   │       │       │T(FUNC)│
+     * │T(FUNC)│       │       │ O(LSH)|CTL/SPC│O(LCMD)│O(LOPT)│  ADJ  │ ROPT  │ RCMD  │  SPC  │  /|\  │       │       │T(FUNC)│
      * └───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
      */
-    [QWERTY] = LAYOUT_ortho_5x15( KC_ESC,   KC_1,     KC_2,     KC_3,           KC_4,            KC_5,           SCMD(KC_LALT),  KC_UP,      ALL_T(KC_APP),  KC_6,     KC_7,    KC_8,     KC_9,     KC_0,     KC_BSPC, \
-                                  KC_GRV,   KC_Q,     KC_W,     KC_E,           KC_R,            KC_T,           KC_LEFT,        KC_DOWN,    KC_RGHT,        KC_Y,     KC_U,    KC_I,     KC_O,     KC_P,     KC_EQL,  \
-                                  KC_LCTL,  KC_A,     KC_S,     KC_D,           KC_F,            KC_G,           KC_TAB,         XXXXXXX,    KC_ENT,         KC_H,     KC_J,    KC_K,     KC_L,     KC_SCLN,  KC_QUOT, \
-                                  KC_LSFT,  KC_Z,     KC_X,     KC_C,           KC_V,            KC_B,           TD(TD_LBRKT),   XXXXXXX,    TD(TD_RBRKT),   KC_N,     KC_M,    KC_COMM,  KC_DOT,   KC_SLSH,  KC_MINS, \
-                                  TT(FUNC), XXXXXXX,  XXXXXXX,  OSM(MOD_LSFT),  LCTL_T(KC_SPC),  OSM(MOD_LGUI),  OSM(MOD_LALT),  MO(ADJUST), KC_RALT,        KC_RGUI,  KC_SPC,  KC_BSLS,  XXXXXXX,  XXXXXXX,  TT(FUNC) ),
+    [QWERTY] = LAYOUT_ortho_5x15( KC_ESC,   KC_1,     KC_2,     KC_3,           KC_4,            KC_5,           SCMD(KC_LALT),  KC_UP,      ALL_T(KC_APP),  KC_6,     KC_7,    KC_8,         KC_9,     KC_0,          KC_BSPC, \
+                                  KC_GRV,   KC_Q,     KC_W,     KC_E,           KC_R,            KC_T,           KC_LEFT,        KC_DOWN,    KC_RGHT,        KC_Y,     KC_U,    KC_I,         KC_O,     KC_P,          KC_EQL,  \
+                                  KC_LCTL,  KC_A,     KC_S,     KC_D,           KC_F,            KC_G,           KC_TAB,         XXXXXXX,    KC_ENT,         KC_H,     KC_J,    KC_K,         KC_L,     KC_SCLN,       KC_QUOT, \
+                                  KC_LSFT,  KC_Z,     KC_X,     KC_C,           KC_V,            KC_B,           TD(TD_LBRKT),   XXXXXXX,    TD(TD_RBRKT),   KC_N,     KC_M,    KC_COMM,      KC_DOT,   TD(TD_SLASH),  KC_MINS, \
+                                  TT(FUNC), XXXXXXX,  XXXXXXX,  OSM(MOD_LSFT),  LCTL_T(KC_SPC),  OSM(MOD_LGUI),  OSM(MOD_LALT),  MO(ADJUST), KC_RALT,        KC_RGUI,  KC_SPC,  TD(TD_SLASH), XXXXXXX,  XXXXXXX,       TT(FUNC) ),
 
     /* FUNC
      * ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
@@ -142,6 +145,24 @@ void tapdance_rbrkt(qk_tap_dance_state_t *state, void *user_data)
             register_code(KC_RSFT);
             tap_code(KC_0);
             unregister_code(KC_RSFT);
+            break;
+    }
+}
+
+void tapdance_slash(qk_tap_dance_state_t *state, void *user_data)
+{
+    switch (state->count)
+    {
+        case 2:
+            register_code(KC_RSFT);
+            tap_code(KC_BSLS);
+            unregister_code(KC_RSFT);
+            break;
+        case 3:
+            tap_code(KC_BSLS);
+            break;
+        default:
+            tap_code(KC_SLSH);
             break;
     }
 }
