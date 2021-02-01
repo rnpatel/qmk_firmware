@@ -47,6 +47,42 @@ qk_tap_dance_action_t tap_dance_actions[] =
     [TD_RBRKT] = ACTION_TAP_DANCE_FN(tapdance_rbrkt),
 };
 
+// Light the four corners red when FUNC is active
+const rgblight_segment_t PROGMEM func_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {0, 3, HSV_RED},       // Light 3 LEDs, starting with LED 0
+    {5, 6, HSV_RED},       // Light 6 LEDs, starting with LED 5
+    {13, 3, HSV_RED}       // Light 3 LEDs, starting with LED 13
+);
+
+// Light the middle green when ADJUST is active
+const rgblight_segment_t PROGMEM adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {2, 4, HSV_ORANGE},
+    {10, 4, HSV_ORANGE}
+);
+
+
+// Now define the array of layers. Later layers take precedence
+const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
+    func_layer,                 // Overrides default layer
+    adjust_layer                // Overrides other layers
+);
+
+void keyboard_post_init_user(void) {
+    // Enable the LED layers
+    rgblight_layers = my_rgb_layers;
+}
+
+// layer_state_t default_layer_state_set_user(layer_state_t state) {
+//     rgblight_set_layer_state(0, layer_state_cmp(state, QWERTY));
+//     return state;
+// }
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    rgblight_set_layer_state(0, layer_state_cmp(state, FUNC));
+    rgblight_set_layer_state(1, layer_state_cmp(state, ADJUST));
+    return state;
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
 {
     /* QWERTY
@@ -57,9 +93,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
      * │ Ctrl  │   A   │   S   │   D   │   F   │   G   │  TAB  │       │ ENTER │   H   │   J   │   K   │   L   │   ;   │   '   │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-     * │ LShft │   Z   │   X   │   C   │   V   │   B   │  ([{  │       │  }])  │   N   │   M   │   ,   │   .   │  /|\  │   -   │
+     * │ LShft │   Z   │   X   │   C   │   V   │   B   │  ([{  │       │  }])  │   N   │   M   │   ,   │   .   │   /   │   -   │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-     * │T(FUNC)│       │       │ O(LSH)|CTL/SPC│O(LCMD)│O(LOPT)│  ADJ  │ ROPT  │ RCMD  │  SPC  │  /|\  │       │       │T(FUNC)│
+     * │T(FUNC)│       │       │ O(LSH)|CTL/SPC│O(LCMD)│O(LOPT)│  ADJ  │ ROPT  │ RCMD  │  SPC  │   \   │       │       │T(FUNC)│
      * └───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
      */
     [QWERTY] = LAYOUT_ortho_5x15( KC_ESC,    KC_1,     KC_2,     KC_3,           KC_4,            KC_5,           SCMD(KC_LALT),  KC_UP,       ALL_T(KC_APP),  KC_6,     KC_7,    KC_8,     KC_9,     KC_0,     KC_BSPC, \
