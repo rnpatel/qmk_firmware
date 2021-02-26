@@ -48,6 +48,11 @@ qk_tap_dance_action_t tap_dance_actions[] =
     [TD_RBRKT] = ACTION_TAP_DANCE_FN(tapdance_rbrkt),
 };
 
+// light the whole board purple when GAME is active
+const rgblight_segment_t PROGMEM game_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {0, 16, HSV_PURPLE}
+);
+
 // Light the four corners red when FUNC is active
 const rgblight_segment_t PROGMEM func_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {0, 3, HSV_RED},       // Light 3 LEDs, starting with LED 0
@@ -64,7 +69,8 @@ const rgblight_segment_t PROGMEM adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS(
 
 // Now define the array of layers. Later layers take precedence
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-    func_layer,                 // Overrides default layer
+    game_layer,                 // Overrides default layer
+    func_layer,                 // Overrides other layers
     adjust_layer                // Overrides other layers
 );
 
@@ -79,8 +85,9 @@ void keyboard_post_init_user(void) {
 // }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    rgblight_set_layer_state(0, layer_state_cmp(state, FUNC));
-    rgblight_set_layer_state(1, layer_state_cmp(state, ADJUST));
+    rgblight_set_layer_state(0, layer_state_cmp(state, GAME));
+    rgblight_set_layer_state(1, layer_state_cmp(state, FUNC));
+    rgblight_set_layer_state(2, layer_state_cmp(state, ADJUST));
     return state;
 }
 
@@ -122,7 +129,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
                                 KC_GRV,    KC_Q,     KC_W,     KC_E,     KC_R,    KC_T,     KC_LEFT,        KC_DOWN,  KC_RGHT,        KC_Y,     KC_U,    KC_I,     KC_O,     KC_P,     KC_EQL,    \
                                 KC_LCTL,   KC_A,     KC_S,     KC_D,     KC_F,    KC_G,     KC_TAB,         XXXXXXX,  KC_ENT,         KC_H,     KC_J,    KC_K,     KC_L,     KC_SCLN,  KC_QUOT,   \
                                 KC_LSFT,   KC_Z,     KC_X,     KC_C,     KC_V,    KC_B,     KC_LBRC,        XXXXXXX,  KC_RBRC,        KC_N,     KC_M,    KC_COMM,  KC_DOT,   KC_SLSH,  KC_MINS,   \
-                                MO(FUNC),  XXXXXXX,  XXXXXXX,  KC_LSFT,  KC_SPC,  KC_LGUI,  KC_LALT,        XXXXXXX,  KC_RALT,        KC_RGUI,  KC_SPC,  KC_BSLS,  XXXXXXX,  XXXXXXX,  DF(QWERTY) ),
+                                MO(FUNC),  XXXXXXX,  XXXXXXX,  KC_LSFT,  KC_SPC,  KC_LGUI,  KC_LALT,        XXXXXXX,  KC_RALT,        KC_RGUI,  KC_SPC,  KC_BSLS,  XXXXXXX,  XXXXXXX,  TO(QWERTY) ),
 
     /* FUNC
      * ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
@@ -160,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
                                   RGB_MOD,   RGB_HUI,  RGB_SAI,  RGB_VAI,  RGB_SPI,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
                                   RGB_RMOD,  RGB_HUD,  RGB_SAD,  RGB_VAD,  RGB_SPD,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
                                   RGB_TOG,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
-                                  XXXXXXX,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  DF(GAME) ),
+                                  XXXXXXX,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  TO(GAME) ),
 };
 
 void tapdance_lbrkt(qk_tap_dance_state_t *state, void *user_data)
