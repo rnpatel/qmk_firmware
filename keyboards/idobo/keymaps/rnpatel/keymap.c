@@ -48,9 +48,9 @@ qk_tap_dance_action_t tap_dance_actions[] =
     [TD_RBRKT] = ACTION_TAP_DANCE_FN(tapdance_rbrkt),
 };
 
-// light the whole board purple when GAME is active
+// light the whole board green when GAME is active
 const rgblight_segment_t PROGMEM game_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 16, HSV_PURPLE}
+    {0, 16, HSV_GREEN}
 );
 
 // Light the four corners red when FUNC is active
@@ -60,10 +60,10 @@ const rgblight_segment_t PROGMEM func_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {13, 3, HSV_RED}       // Light 3 LEDs, starting with LED 13
 );
 
-// Light the middle green when ADJUST is active
+// Light the middle yellow when ADJUST is active
 const rgblight_segment_t PROGMEM adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {3, 2, HSV_GREEN},
-    {11, 2, HSV_GREEN}
+    {3, 2, HSV_YELLOW},
+    {11, 2, HSV_YELLOW}
 );
 
 
