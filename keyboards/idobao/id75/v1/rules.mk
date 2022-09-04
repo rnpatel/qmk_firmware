@@ -18,4 +18,6 @@ RGBLIGHT_ENABLE = yes       # Enable keyboard RGB underglow
 AUDIO_ENABLE = no           # Audio output
 LTO_ENABLE = yes            # Use link time optimization
 
+TAP_DANCE_ENABLE = yes
+
 LAYOUTS = ortho_5x15
