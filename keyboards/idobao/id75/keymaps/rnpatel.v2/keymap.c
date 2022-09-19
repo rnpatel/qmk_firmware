@@ -216,3 +216,31 @@ void led_set_user(uint8_t usb_led)
 {
 
 }
+
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max)
+{
+    switch(get_highest_layer(layer_state | default_layer_state))
+    {
+        case FUNC:
+        {
+            rgb_matrix_set_color_all(RGB_ORANGE);
+            break;
+        }
+        case GAME:
+        {
+            rgb_matrix_set_color_all(RGB_GREEN);
+            break;
+        }
+        default:
+        {
+            // for (uint8_t i = led_min; i <= led_max; i++)
+            // {
+            //     if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER))
+            //     {
+            //         rgb_matrix_set_color(i, 0xff, 0x80, 0x40);
+            //     }
+            // }
+            break;
+        }
+    }
+}
