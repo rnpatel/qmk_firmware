@@ -111,7 +111,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
      * ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐
      * │       │       │       │       │       │       │       │ RESET │       │       │       │       │       │       │       │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-     * │ RGBUP │ HUEUP │ SATUP │ VALUP │ SPDUP │       │       │       │       │       │       │       │       │       │       │
+     * │ RGBUP │ HUEUP │ SATUP │ VALUP │ SPDUP │       │       │       │       │ PLAIN │BREATHE│SCROLL │ SWIRL │       │       │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
      * │ RGBDN │ HUEDN │ SATDN │ VALDN │ SPDND │       │       │       │       │       │       │       │       │       │       │
      * ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤
@@ -121,7 +121,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
      * └───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘
      */
     [ADJUST] = LAYOUT_ortho_5x15( XXXXXXX,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  RESET,    XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
-                                  RGB_MOD,   RGB_HUI,  RGB_SAI,  RGB_VAI,  RGB_SPI,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
+                                  RGB_MOD,   RGB_HUI,  RGB_SAI,  RGB_VAI,  RGB_SPI,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, XXXXXXX,  XXXXXXX, \
                                   RGB_RMOD,  RGB_HUD,  RGB_SAD,  RGB_VAD,  RGB_SPD,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
                                   RGB_TOG,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX, \
                                   XXXXXXX,   XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  TO(GAME) ),
@@ -217,29 +217,49 @@ void led_set_user(uint8_t usb_led)
 
 }
 
+void rnp_set_alpha_key_color(uint8_t red, uint8_t green, uint8_t blue)
+{
+    int row = 0;
+    int col = 0;
+    int index;
+
+    for (row = 1; row <= 3; row++)
+    {
+        for (col = 1; col <= 5; col++)
+        {
+            index = g_led_config.matrix_co[row][col];
+            rgb_matrix_set_color(index, red, green, blue);
+        }
+
+        for (col = 9; col <= 13; col++)
+        {
+            index = g_led_config.matrix_co[row][col];
+            rgb_matrix_set_color(index, red, green, blue);
+        }
+    }
+}
+
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max)
 {
     switch(get_highest_layer(layer_state | default_layer_state))
     {
         case FUNC:
         {
-            rgb_matrix_set_color_all(RGB_ORANGE);
+            rnp_set_alpha_key_color(RGB_ORANGE);
             break;
         }
         case GAME:
         {
-            rgb_matrix_set_color_all(RGB_GREEN);
+            rnp_set_alpha_key_color(RGB_GREEN);
+            break;
+        }
+        case ADJUST:
+        {
+            rnp_set_alpha_key_color(RGB_PURPLE);
             break;
         }
         default:
         {
-            // for (uint8_t i = led_min; i <= led_max; i++)
-            // {
-            //     if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER))
-            //     {
-            //         rgb_matrix_set_color(i, 0xff, 0x80, 0x40);
-            //     }
-            // }
             break;
         }
     }
