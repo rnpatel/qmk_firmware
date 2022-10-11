@@ -207,9 +207,102 @@ void matrix_init_user(void)
 
 }
 
+typedef struct {
+    int col;
+    int row;
+} VEC2;
+
+#define MOD_COLOR 0xAB, 0x34, 0xD0
+#define ONESHOT_COLOR 0xD0, 0x69, 0x34
+
 void matrix_scan_user(void)
 {
+    uint8_t oneshots = get_oneshot_mods();
+    uint8_t mods = get_mods();
 
+    VEC2 sft[] = { {0, 3}, {3, 4} };
+    VEC2 ctr[] = { {0, 2}, {4, 4} };
+    VEC2 opt[] = { {6, 4}, {8, 4} };
+    VEC2 cmd[] = { {5, 4}, {9, 4} };
+
+    if (oneshots & MOD_MASK_CTRL)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = ctr[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, ONESHOT_COLOR);
+        }
+    }
+    else if (mods & MOD_MASK_CTRL)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = ctr[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, MOD_COLOR);
+        }
+    }
+
+    if (oneshots & MOD_MASK_ALT)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = opt[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, ONESHOT_COLOR);
+        }
+
+    }
+    else if (mods & MOD_MASK_ALT)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = opt[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, MOD_COLOR);
+        }
+    }
+
+    if (oneshots & MOD_MASK_GUI)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = cmd[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, ONESHOT_COLOR);
+        }
+
+    }
+    else if (mods & MOD_MASK_GUI)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = cmd[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, MOD_COLOR);
+        }
+    }
+
+    if (oneshots & MOD_MASK_SHIFT)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = sft[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, ONESHOT_COLOR);
+        }
+
+    }
+    else if (mods & MOD_MASK_SHIFT)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            VEC2 vec = sft[i];
+            int index = g_led_config.matrix_co[vec.row][vec.col];
+            rgb_matrix_set_color(index, MOD_COLOR);
+        }
+    }
 }
 
 void led_set_user(uint8_t usb_led)
