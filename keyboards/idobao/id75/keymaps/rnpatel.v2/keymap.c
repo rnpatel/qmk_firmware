@@ -212,8 +212,8 @@ typedef struct {
     int row;
 } VEC2;
 
-#define MOD_COLOR 0xAB, 0x34, 0xD0
-#define ONESHOT_COLOR 0xD0, 0x69, 0x34
+#define MOD_COLOR     RGB_ORANGE
+#define ONESHOT_COLOR RGB_PURPLE
 
 void matrix_scan_user(void)
 {
@@ -224,6 +224,8 @@ void matrix_scan_user(void)
     VEC2 ctr[] = { {0, 2}, {4, 4} };
     VEC2 opt[] = { {6, 4}, {8, 4} };
     VEC2 cmd[] = { {5, 4}, {9, 4} };
+
+    if (!oneshots && !mods) return;
 
     if (oneshots & MOD_MASK_CTRL)
     {
