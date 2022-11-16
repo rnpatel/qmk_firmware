@@ -212,13 +212,21 @@ typedef struct {
     int row;
 } VEC2;
 
-#define MOD_COLOR     RGB_ORANGE
-#define ONESHOT_COLOR RGB_PURPLE
+// #define HIGHLIGHT_COLOR     0xFF, 0x00, 0x00
+// #define ONESHOT_COLOR       0x00, 0xFF, 0x00
+// #define STICKY_COLOR        0x00, 0x00, 0xFF
+
+#define HIGHLIGHT_COLOR     RGB_WHITE
+#define ONESHOT_COLOR       RGB_ORANGE
+#define STICKY_COLOR        RGB_PURPLE
 
 void matrix_scan_user(void)
 {
+    uint8_t sticky = get_oneshot_locked_mods();
     uint8_t oneshots = get_oneshot_mods();
     uint8_t mods = get_mods();
+
+    uint8_t allMods = sticky | oneshots | mods;
 
     VEC2 sft[] = { {0, 3}, {3, 4} };
     VEC2 ctr[] = { {0, 2}, {4, 4} };
@@ -227,82 +235,63 @@ void matrix_scan_user(void)
 
     if (!oneshots && !mods) return;
 
-    if (oneshots & MOD_MASK_CTRL)
+    if (allMods & MOD_MASK_CTRL)
     {
+        uint8_t s = sticky & MOD_MASK_CTRL;
+        uint8_t o = oneshots & MOD_MASK_CTRL;
+
         for (int i = 0; i < 2; i++)
         {
             VEC2 vec = ctr[i];
             int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, ONESHOT_COLOR);
-        }
-    }
-    else if (mods & MOD_MASK_CTRL)
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            VEC2 vec = ctr[i];
-            int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, MOD_COLOR);
+            if (s)      rgb_matrix_set_color(index, STICKY_COLOR);
+            else if (o) rgb_matrix_set_color(index, ONESHOT_COLOR);
+            else        rgb_matrix_set_color(index, HIGHLIGHT_COLOR);
         }
     }
 
-    if (oneshots & MOD_MASK_ALT)
+    if (allMods & MOD_MASK_ALT)
     {
+        uint8_t s = sticky & MOD_MASK_ALT;
+        uint8_t o = oneshots & MOD_MASK_ALT;
+
         for (int i = 0; i < 2; i++)
         {
             VEC2 vec = opt[i];
             int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, ONESHOT_COLOR);
-        }
-
-    }
-    else if (mods & MOD_MASK_ALT)
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            VEC2 vec = opt[i];
-            int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, MOD_COLOR);
+            if (s)      rgb_matrix_set_color(index, STICKY_COLOR);
+            else if (o) rgb_matrix_set_color(index, ONESHOT_COLOR);
+            else        rgb_matrix_set_color(index, HIGHLIGHT_COLOR);
         }
     }
 
-    if (oneshots & MOD_MASK_GUI)
+    if (allMods & MOD_MASK_GUI)
     {
+        uint8_t s = sticky & MOD_MASK_GUI;
+        uint8_t o = oneshots & MOD_MASK_GUI;
+
         for (int i = 0; i < 2; i++)
         {
             VEC2 vec = cmd[i];
             int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, ONESHOT_COLOR);
-        }
-
-    }
-    else if (mods & MOD_MASK_GUI)
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            VEC2 vec = cmd[i];
-            int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, MOD_COLOR);
+            if (s)      rgb_matrix_set_color(index, STICKY_COLOR);
+            else if (o) rgb_matrix_set_color(index, ONESHOT_COLOR);
+            else        rgb_matrix_set_color(index, HIGHLIGHT_COLOR);
         }
     }
 
-    if (oneshots & MOD_MASK_SHIFT)
+    if (allMods & MOD_MASK_SHIFT)
     {
+        uint8_t s = sticky & MOD_MASK_SHIFT;
+        uint8_t o = oneshots & MOD_MASK_SHIFT;
+
         for (int i = 0; i < 2; i++)
         {
             VEC2 vec = sft[i];
             int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, ONESHOT_COLOR);
-        }
-
-    }
-    else if (mods & MOD_MASK_SHIFT)
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            VEC2 vec = sft[i];
-            int index = g_led_config.matrix_co[vec.row][vec.col];
-            rgb_matrix_set_color(index, MOD_COLOR);
+            if (s)      rgb_matrix_set_color(index, STICKY_COLOR);
+            else if (o) rgb_matrix_set_color(index, ONESHOT_COLOR);
+            else        rgb_matrix_set_color(index, HIGHLIGHT_COLOR);
         }
     }
 }
@@ -359,3 +348,57 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max)
         }
     }
 }
+/*
+  void set_rgblight_by_layer(uint32_t layer) {
+    for (int i = 0; i < led_count; i++) {
+        switch (layer) {
+            case _LOCK:
+            case _ROMAK:
+                break;
+            case _NUMPAD:
+                rgb_matrix_set_color(leds[i], RGB_PURPLE);
+                break;
+            case _MAINTENANCE:
+                rgb_matrix_set_color(leds[i], RGB_RED);
+                break;
+            default:
+                rgb_matrix_set_color(leds[i], RGB_SPRINGGREEN);
+                break;
+        }
+    }
+}
+
+void set_current_layer_rgb(void) {
+    set_rgblight_by_layer(get_highest_layer(layer_state | default_layer_state));
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    set_rgblight_by_layer(biton32(state));
+    return state;
+}
+
+void rgb_matrix_indicators_user(void) {
+    uint8_t mods                = get_mods();
+    uint8_t oneshot_mods        = get_oneshot_mods();
+    uint8_t oneshot_locked_mods = get_oneshot_locked_mods();
+
+    bool isShift = mods & MOD_MASK_SHIFT || oneshot_mods & MOD_MASK_SHIFT || oneshot_locked_mods & MOD_MASK_SHIFT;
+    bool isCtrl  = mods & MOD_MASK_CTRL || oneshot_mods & MOD_MASK_CTRL || oneshot_locked_mods & MOD_MASK_CTRL;
+    bool isAlt   = mods & MOD_MASK_ALT || oneshot_mods & MOD_MASK_ALT || oneshot_locked_mods & MOD_MASK_ALT;
+    bool isGui   = mods & MOD_MASK_GUI || oneshot_mods & MOD_MASK_GUI || oneshot_locked_mods & MOD_MASK_GUI;
+
+    for (int i = 0; i < led_count; i++) {
+        if (swapper.state != NONE || leader.isLeading || select_word.state != STATE_NONE) {
+            rgb_matrix_set_color(leds[i], RGB_GREEN);
+        } else if (has_any_smart_case()) {
+            rgb_matrix_set_color(leds[i], RGB_YELLOW);
+        } else if (isShift) {
+            rgb_matrix_set_color(leds[i], RGB_TEAL);
+        } else if (isCtrl || isAlt || isGui) {
+            rgb_matrix_set_color(leds[i], RGB_WHITE);
+        } else {
+            set_current_layer_rgb();
+        }
+    }
+}
+*/
